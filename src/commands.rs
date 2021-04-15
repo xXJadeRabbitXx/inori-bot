@@ -1,5 +1,20 @@
 use serenity::client::Context;
 use serenity::model::channel::Message;
+use serenity::framework::standard::macros::command;
+use serenity::framework::standard::CommandResult;
+use serenity::framework::standard::macros::group;
+
+#[command]
+pub(super) async fn about(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.channel_id.say(&ctx.http, "A simple test bot").await?;
+    Ok(())
+}
+
+#[command]
+pub(super) async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.channel_id.say(&ctx.http, "pong!").await?;
+    Ok(())
+}
 
 const HELP_MESSAGE: &str = "
           Hello there, Human!
@@ -40,6 +55,11 @@ pub(super) async fn echo(ctx: &Context, message: &Message) -> Option<Message> {
             None
         },
     }
+}
+
+pub(super) async fn summon(ctx: &Context, message: &Message) -> Option<Message> {
+    //ctx.
+    None
 }
 
 pub(super) async fn unknown_command(ctx: &Context, message: &Message) -> Option<Message> {
