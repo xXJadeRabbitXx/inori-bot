@@ -1,53 +1,34 @@
+mod commands;
+
 //used to store environment variables, in this case the discord auth token
 use std::env;
+use songbird::SerenityInit;
 
-use serenity::async_trait;
-use serenity::model::gateway::Ready;
-
-use serenity::client::{Client, Context, EventHandler};
-use serenity::model::channel::Message;
-use serenity::framework::standard::macros::{command, group};
-use serenity::framework::standard::{StandardFramework, CommandResult};
-
-#[command]
-async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx.http, "pong!").await?;
-
-    Ok(())
-}
-
-#[command]
-async fn echo(ctx: &Context, msg: &Message) -> CommandResult {
-    let payload = msg.content.as_str().strip_prefix("!echo");
-
-    msg.reply(&ctx.http, payload.unwrap_or_default()).await?;
-
-    Ok(())
-}
-
-/*
-#[command]
-async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(&ctx.http, "deleting messages").await?;
-
-    let mut messages = msg.channel_id.messages_iter(&ctx).boxed();
-    while let Some(message_result) = messages.next().await {
-        match message_result {
-            Ok(message) => {
-                if message.is_own(&ctx.cache).await {
-                    message.delete(&ctx).await?;
-                }
-            },
-            Err(error) => eprintln!("Uh oh! Error: {}", error),
-        }
+use serenity::{
+    async_trait,
+    model::gateway::Ready,
+    client::{
+        Client,
+        Context,
+        EventHandler
+    },
+    framework::standard::{
+        StandardFramework,
+        macros::group
     }
+};
 
-    Ok(())
-}
-*/
+use commands::{
+    clear::*,
+    echo::*,
+    ping::*,
+    summon::*,
+    dismiss::*,
+    play::*
+};
 
 #[group]
-#[commands(ping, echo)]
+#[commands(ping, echo, summon, dismiss, play)]
 struct General;
 
 struct Handler;
@@ -73,6 +54,7 @@ async fn main() {
     let mut client = Client::builder(&token)
         .event_handler(Handler)
         .framework(framework)
+        .register_songbird()
         .await
         .expect("Err creating client");
 
